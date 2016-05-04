@@ -1,4 +1,4 @@
-package com.example.downloadthread.download;
+package com.example.downloadthread.bean;
 
 /**
  * 存储下载信息的类

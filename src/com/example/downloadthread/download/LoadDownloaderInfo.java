@@ -8,7 +8,7 @@ package com.example.downloadthread.download;
 public class LoadDownloaderInfo {
 
 	/**
-	 * 定义下载器标识，文件大小，完成度
+	 * 管理下载器，文件大小，完成度
 	 */
 	private String loaderTag;
 	private int fileSize;

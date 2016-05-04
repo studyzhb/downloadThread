@@ -6,11 +6,15 @@ import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import com.example.downloadthread.bean.DownloadInfo;
+import com.example.downloadthread.db.DownloadDataDB;
+
 import android.os.Handler;
 import android.os.Message;
 
 
 public class HttpUtils {
+	private static DownloadDataDB downDB;
 	private static boolean PAUSE=false;
 	public static void pauseQuest(){
 		if(!PAUSE){
@@ -19,7 +23,7 @@ public class HttpUtils {
 	}
 	public static void requestDownloadMessage(final int threadId,final String urlpath,final int startSize,final int endSize,final String localFile,final OndownloadCallBack callback){
 		
-		Handler handler=new Handler(){
+		final Handler handler=new Handler(){
 			@Override
 			public void handleMessage(Message msg) {
 				switch (msg.what) {
@@ -51,6 +55,7 @@ public class HttpUtils {
 					httpconn.setReadTimeout(8000);
 					
 					if(endSize!=0){
+						downDB=DownloadDataDB.getInstance();
 						httpconn.setRequestProperty("Range", "bytes="+startSize+"-"+endSize);
 						InputStream is=httpconn.getInputStream();
 						//标记写入的起始位置
@@ -66,7 +71,8 @@ public class HttpUtils {
 							message.arg1=len;
 							message.arg2=compledSize;
 							message.obj=urlpath;
-							HandleUtisl.handleReadLen();
+							downDB.updateInfo(threadId, compledSize, urlpath);
+							handler.sendMessage(message);
 							if(PAUSE){
 								return;
 							}
