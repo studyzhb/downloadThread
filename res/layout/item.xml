@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+     android:descendantFocusability="blocksDescendants"
+    android:orientation="horizontal" >
+    
+	<TextView 
+	    android:id="@+id/title_path"
+	    android:layout_width="0dp"
+	    android:layout_height="20dp"
+	    android:singleLine="true"
+	    android:ellipsize="end"
+	    android:layout_weight="3"
+	    />
+	<TextView 
+	    android:id="@+id/title_file"
+	    android:layout_width="0dp"
+	    android:layout_height="20dp"
+	    android:singleLine="true"
+	    android:ellipsize="end"
+	    android:layout_weight="1"
+	    />
+	<Button android:layout_width="0dp"
+	    android:layout_height="wrap_content"
+	    android:layout_weight="1"
+	    android:id="@+id/start_down"
+	    android:text="start"/>
+	<Button android:layout_width="0dp"
+	    android:layout_height="wrap_content"
+	    android:layout_weight="1"
+	    android:visibility="gone"
+	    android:id="@+id/pause_down"
+	    android:text="pause"/>
+	
+</LinearLayout>

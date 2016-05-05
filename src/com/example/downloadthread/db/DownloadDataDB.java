@@ -72,7 +72,7 @@ public class DownloadDataDB {
 	 * @param url
 	 */
 	public void updateInfo(int threadid,int completedSize,String url){
-		String sql="upadate downloadData set completed_size=? where thread_id=? and url=?";
+		String sql="update downloadData set completed_size=? where thread_id=? and url=?";
 		Object[] values={threadid,completedSize,url};
 		db.execSQL(sql, values);
 	}

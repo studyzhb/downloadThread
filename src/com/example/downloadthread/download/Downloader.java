@@ -1,5 +1,12 @@
 package com.example.downloadthread.download;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.io.RandomAccessFile;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +16,9 @@ import com.example.downloadthread.utils.Costant;
 import com.example.downloadthread.utils.HttpUtils;
 import com.example.downloadthread.utils.HttpUtils.OndownloadCallBack;
 
+import android.os.Environment;
+import android.util.Log;
+
 
 /**
  * 下载器类
@@ -16,14 +26,14 @@ import com.example.downloadthread.utils.HttpUtils.OndownloadCallBack;
  * @author Administrator
  *
  */
-public class Downloader {
+public class Downloader implements OndownloadCallBack{
 	/**
 	 * 定义下载地址，文件总大小，线程数（可以进行分组按比例开启），存储地址，
 	 * 还要有一个context用来向数据库存储数据信息时用到，可以使用Application，不用传
 	 */
 	private String urlstr;
 	//文件大小
-	private int filesize;
+	private static int filesize;
 	//本地存放路径
 	private String localfile;
 	private int threadcount;
@@ -63,12 +73,14 @@ public class Downloader {
 	public LoadDownloaderInfo getDownloadInfo(){
 		if(isFirstDownload()){
 			init();
+			Log.d("--filesize", filesize+"");
 			int result=filesize/Costant.THREAD_READ;
+			Log.d("---->result", result+"");
 			int re=filesize%Costant.THREAD_READ;
 			if(re==0){
-				threadcount=result;
+				threadcount=4;
 			}else{
-				threadcount=result+1;
+				threadcount=4;
 			}
 			int range=filesize/threadcount;
 			dinfos=new ArrayList<DownloadInfo>();
@@ -95,22 +107,42 @@ public class Downloader {
 	}
 
 	private void init() {
-		HttpUtils.requestDownloadMessage(0, urlstr, 0, 0, localfile, new OndownloadCallBack() {
-			
-			@Override
-			public void getResponse(String url, int completedSize, int len, int threadid) {
-				
-				
-			}
-			
-			@Override
-			public void getFileSize(int fileSize) {
-				
-				Downloader.this.filesize=fileSize;
-			}
-		});
+		HttpUtils.requestDownloadMessage(0, urlstr, 0, 0, localfile,this);
 		
+		
+		
+//		HttpURLConnection httpconn = null;
+//		try {
+//
+//			URL url = new URL(urlstr);
+//			httpconn = (HttpURLConnection) url.openConnection();
+//			httpconn.setRequestMethod("GET");
+//			httpconn.setConnectTimeout(8000);
+//			httpconn.setReadTimeout(8000);
+//			
+//			File file = new File(Environment.getExternalStorageDirectory(),localfile);
+//			if (!file.exists()) {
+//				file.createNewFile();
+//			}
+//			// 类似IO操作，可以读写
+//			RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rwd");
+//			
+//
+//				filesize = httpconn.getContentLength();
+//				randomAccessFile.setLength(filesize);
+//				randomAccessFile.close();
+//				httpconn.disconnect();
+//			
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		} finally {
+//			if (httpconn != null) {
+//				httpconn.disconnect();
+//			}
+//		}
+
 	}
+		
 	
 	public void download(){
 		if(dinfos!=null){
@@ -118,22 +150,28 @@ public class Downloader {
 				return;
 			}
 			for(DownloadInfo dinfo:dinfos){
-				HttpUtils.requestDownloadMessage(dinfo.getThreadinfo(), dinfo.getUrl(), dinfo.getStartpos(), dinfo.getEndpos(), localfile, new OndownloadCallBack() {
-					
-					@Override
-					public void getResponse(String url, int completedSize, int len, int threadid) {
-						
-						
-					}
-					
-					@Override
-					public void getFileSize(int fileSize) {
-						
-						
-					}
-				});
+				HttpUtils.requestDownloadMessage(dinfo.getThreadinfo(), dinfo.getUrl(), dinfo.getStartpos()+dinfo.getCompletedSize(), dinfo.getEndpos(), localfile, this);
 			}
 		}
+	}
+
+	@Override
+	public void getFileSize(int fileSize) {
+		this.filesize=fileSize;
+		Log.d("--filesize--before", filesize+"");
+		
+	}
+
+	@Override
+	public void getResponse(String url, int completedSize, int len, int threadid) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void getString(String str) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
